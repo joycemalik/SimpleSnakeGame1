@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Snake vs Mr JOYSiM - Web Version</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="gameCanvas" width="1200" height="720"></canvas>
+
+<!-- Welcome Screen Overlay -->
+<div id="welcome-screen" class="overlay">
+  <img src="assets/wlc.png" alt="Welcome" class="full-background">
+  <button id="start-button" class="action-button">Start Game</button>
+  <p class="info-text">Press SPACE or click Start to begin</p>
+</div>
+
+<!-- Game Over Screen Overlay -->
+<div id="over-screen" class="overlay">
+  <img src="assets/over.png" alt="Game Over" class="full-background">
+  <div class="overlay-content">
+    <div id="final-score" class="score-text"></div>
+    <button id="play-again-button" class="action-button">Play Again</button>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
