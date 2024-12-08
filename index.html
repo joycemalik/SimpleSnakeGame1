@@ -1,29 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
+<!-- Ensures mobile-friendly scaling -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Snake vs Mr JOYSiM - Web Version</title>
+<title>Snake Game</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<canvas id="gameCanvas" width="1200" height="720"></canvas>
+<div id="game-container">
+    <canvas id="gameCanvas" width="1200" height="720"></canvas>
+    
+    <!-- Welcome Screen Overlay -->
+    <div id="welcome-screen" class="overlay">
+        <img src="assets/wlc.png" class="overlay-bg" alt="Welcome Background">
+        <div class="overlay-content">
+            <button id="start-button" class="action-button">Start Game</button>
+            <p class="info-text">Press SPACE or click Start to begin</p>
+            <p class="dev-text">Developer: Joyce Malik</p>
+        </div>
+    </div>
 
-<!-- Welcome Screen Overlay -->
-<div id="welcome-screen" class="overlay">
-  <img src="assets/wlc.png" alt="Welcome" class="full-background">
-  <button id="start-button" class="action-button">Start Game</button>
-  <p class="info-text">Press SPACE or click Start to begin</p>
-</div>
+    <!-- Game Over Screen Overlay -->
+    <div id="over-screen" class="overlay">
+        <img src="assets/over.png" class="overlay-bg" alt="Game Over Background">
+        <div class="overlay-content">
+            <h1 class="game-over-title">GAME OVER</h1>
+            <p class="score-label">Score:</p>
+            <div id="final-score" class="score-text"></div>
+            <button id="play-again-button" class="action-button">Play Again</button>
+        </div>
+    </div>
 
-<!-- Game Over Screen Overlay -->
-<div id="over-screen" class="overlay">
-  <img src="assets/over.png" alt="Game Over" class="full-background">
-  <div class="overlay-content">
-    <div id="final-score" class="score-text"></div>
-    <button id="play-again-button" class="action-button">Play Again</button>
-  </div>
+    <!-- Mobile Controls -->
+    <div id="controls">
+        <div class="controls-grid">
+            <div></div>
+            <button class="arrow up">▲</button>
+            <div></div>
+            <button class="arrow left">◀</button>
+            <div></div>
+            <button class="arrow right">▶</button>
+            <div></div>
+            <button class="arrow down">▼</button>
+            <div></div>
+        </div>
+    </div>
 </div>
 
 <script src="game.js"></script>

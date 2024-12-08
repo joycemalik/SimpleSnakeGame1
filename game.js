@@ -1,4 +1,3 @@
-// Canvas and Context
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -9,11 +8,17 @@ const finalScoreEl = document.getElementById('final-score');
 const startButton = document.getElementById('start-button');
 const playAgainButton = document.getElementById('play-again-button');
 
-// Game Variables
-const SCREEN_WIDTH = canvas.width;
-const SCREEN_HEIGHT = canvas.height;
+// Controls
+const upArrow = document.querySelector('.arrow.up');
+const downArrow = document.querySelector('.arrow.down');
+const leftArrow = document.querySelector('.arrow.left');
+const rightArrow = document.querySelector('.arrow.right');
 
-let gameState = 'welcome'; // 'welcome', 'game', 'over'
+// Game Variables
+const SCREEN_WIDTH = 1200;
+const SCREEN_HEIGHT = 720;
+
+let gameState = 'welcome';
 let snake = [];
 let snakeLength = 1;
 let snakeSize = 17;
@@ -22,62 +27,52 @@ let snakeY = SCREEN_HEIGHT / 2;
 let velocityX = 0;
 let velocityY = 0;
 let topV = 1;
-
 let score = 0;
-let highscore = 0;
-if (localStorage.getItem("highscore")) {
-  highscore = parseInt(localStorage.getItem("highscore"), 10);
-} else {
-  highscore = 0;
-}
-
+let highscore = localStorage.getItem("highscore") ? parseInt(localStorage.getItem("highscore"),10) : 0;
 let foodX, foodY;
 
 // Assets
 const bgImg = new Image();
 bgImg.src = 'assets/bg.png';
 
-const wlcImg = new Image();
-wlcImg.src = 'assets/wlc.png';
-
-const overImg = new Image();
-overImg.src = 'assets/over.png';
-
-// Sounds
 const eatSound = new Audio('assets/eat.mp3');
 const startSound = new Audio('assets/start.mp3');
-const hoverSound = new Audio('assets/hover.mp3');
 const goverSound = new Audio('assets/gover.mp3');
 const resetSound = new Audio('assets/reset.mp3');
 const bgMusic = new Audio('assets/bg.mp3');
 bgMusic.loop = true;
 
-// Event Listeners
+// Events
 document.addEventListener('keydown', handleKeydown);
 startButton.addEventListener('click', startGame);
 playAgainButton.addEventListener('click', resetGame);
+
+// Touch & Mouse Controls
+upArrow.addEventListener('touchstart', () => setDirection(0, -topV), false);
+downArrow.addEventListener('touchstart', () => setDirection(0, topV), false);
+leftArrow.addEventListener('touchstart', () => setDirection(-topV, 0), false);
+rightArrow.addEventListener('touchstart', () => setDirection(topV, 0), false);
+
+upArrow.addEventListener('mousedown', () => setDirection(0, -topV));
+downArrow.addEventListener('mousedown', () => setDirection(0, topV));
+leftArrow.addEventListener('mousedown', () => setDirection(-topV, 0));
+rightArrow.addEventListener('mousedown', () => setDirection(topV, 0));
+
+function setDirection(vx, vy) {
+  // Prevent immediate reversal
+  if ((vx !== 0 && vx !== -velocityX) || (vy !== 0 && vy !== -velocityY)) {
+    velocityX = vx; velocityY = vy;
+  }
+}
 
 function handleKeydown(e) {
   if (gameState === 'welcome' && (e.code === 'Space' || e.code === 'Enter')) {
     startGame();
   } else if (gameState === 'game') {
-    switch (e.code) {
-      case 'ArrowRight':
-        if (velocityX !== -topV) { velocityX = topV; velocityY = 0; }
-        break;
-      case 'ArrowLeft':
-        if (velocityX !== topV) { velocityX = -topV; velocityY = 0; }
-        break;
-      case 'ArrowUp':
-        if (velocityY !== topV) { velocityX = 0; velocityY = -topV; }
-        break;
-      case 'ArrowDown':
-        if (velocityY !== -topV) { velocityX = 0; velocityY = topV; }
-        break;
-      case 'Escape':
-        velocityX = 0; velocityY = 0;
-        break;
-    }
+    if (e.code === 'ArrowRight' && velocityX !== -topV) { velocityX = topV; velocityY = 0; }
+    else if (e.code === 'ArrowLeft' && velocityX !== topV) { velocityX = -topV; velocityY = 0; }
+    else if (e.code === 'ArrowUp' && velocityY !== topV) { velocityX = 0; velocityY = -topV; }
+    else if (e.code === 'ArrowDown' && velocityY !== -topV) { velocityX = 0; velocityY = topV; }
   } else if (gameState === 'over' && (e.code === 'Enter' || e.code === 'Space')) {
     resetGame();
   }
@@ -140,17 +135,16 @@ function gameOver() {
 }
 
 function updateGame() {
-  // Update snake position
   snakeX += velocityX;
   snakeY += velocityY;
 
-  // Boundary check
+  // Boundary
   if (snakeX < 0 || snakeX > SCREEN_WIDTH || snakeY < 0 || snakeY > SCREEN_HEIGHT) {
     gameOver();
     return;
   }
 
-  // Eat food
+  // Eat
   if (Math.abs(snakeX - foodX) < 15 && Math.abs(snakeY - foodY) < 15) {
     score += 10;
     placeFood();
@@ -159,14 +153,13 @@ function updateGame() {
     eatSound.play();
   }
 
-  // Update snake body
   let head = {x: snakeX, y: snakeY};
   snake.push(head);
   if (snake.length > snakeLength) {
     snake.shift();
   }
 
-  // Check self collision
+  // Self-collision
   for (let i = 0; i < snake.length - 1; i++) {
     if (snake[i].x === head.x && snake[i].y === head.y) {
       gameOver();
@@ -176,20 +169,16 @@ function updateGame() {
 }
 
 function drawGame() {
-  ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-  if (gameState === 'welcome') {
-    // The welcome screen overlay is handling display
-  } else if (gameState === 'game') {
+  if (gameState === 'game') {
     ctx.drawImage(bgImg, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    // Draw food
+    // Food
     ctx.beginPath();
     ctx.fillStyle = 'red';
     ctx.arc(foodX, foodY, snakeSize - 5, 0, Math.PI * 2);
     ctx.fill();
 
-    // Draw snake
+    // Snake
     ctx.fillStyle = 'black';
     for (let i = 0; i < snake.length; i++) {
       ctx.beginPath();
@@ -197,13 +186,10 @@ function drawGame() {
       ctx.fill();
     }
 
-    // Display Score
+    // Score
     ctx.fillStyle = 'red';
     ctx.font = '60px Hyperwave, sans-serif';
     ctx.fillText(`Score: ${score}   High Score: ${highscore}`, 5, 60);
-
-  } else if (gameState === 'over') {
-    // The over screen overlay is handling display
   }
 }
 
@@ -211,11 +197,12 @@ function gameLoop() {
   if (gameState === 'game') {
     updateGame();
   }
+  ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   drawGame();
   requestAnimationFrame(gameLoop);
 }
 
-// Initially show welcome screen
+// Initialize screens
 welcomeScreen.style.display = 'block';
 overScreen.style.display = 'none';
 
